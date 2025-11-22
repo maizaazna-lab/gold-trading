@@ -2,32 +2,561 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>Gold Trading - Zero Budget</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Journal & Tools (Gold)</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body { 
-            font-family: Arial; 
-            background: #111; 
-            color: white; 
-            text-align: center; 
-            padding: 30px;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a; /* Dark background */
+            color: #f0f0f0; /* Light text */
+            padding: 20px;
         }
-        iframe {
-            border: none;
-            width: 90%;
-            height: 500px;
+        .container {
+            max-width: 1000px;
+            margin-top: 20px;
+            background-color: #2a2a2a; /* Slightly lighter dark background for container */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+        h1, h2, h3 {
+            color: #ffd700; /* Gold color for headings */
+        }
+        .form-control, .btn {
+            background-color: #3a3a3a;
+            color: #f0f0f0;
+            border: 1px solid #555;
+        }
+        .btn-primary {
+            background-color: #ffd700; /* Gold button */
+            border-color: #ffd700;
+            color: #1a1a1a;
+        }
+        .btn-primary:hover {
+            background-color: #e0b600;
+            border-color: #e0b600;
+        }
+        .table {
+            color: #f0f0f0;
+        }
+        .table th {
+            color: #ffd700;
+        }
+        .card {
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #3a3a3a;
+            color: #ffd700;
+        }
+        .nav-link {
+            color: #f0f0f0 !important;
+        }
+        .nav-link.active {
+            color: #ffd700 !important;
+            border-bottom: 2px solid #ffd700;
+        }
+        .tab-pane {
+            padding-top: 20px;
+        }
+        #tradeImagePreview {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+            display: none; /* Hidden by default */
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1 class="text-center">Gold Trading Journal & Tools</h1>
 
-    <h1>📈 Gold Trading (Zero Budget Version)</h1>
-    <p>ราคาทองคำแบบ Real-Time จาก TradingView</p>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="journal-tab" data-toggle="tab" href="#journal" role="tab" aria-controls="journal" aria-selected="true">Trading Journal</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="analytics-tab" data-toggle="tab" href="#analytics" role="tab" aria-controls="analytics" aria-selected="false">Analytics</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="calculators-tab" data-toggle="tab" href="#calculators" role="tab" aria-controls="calculators" aria-selected="false">Calculators</a>
+            </li>
+        </ul>
 
-    <!-- Widget ราคาทองคำ -->
-    <iframe 
-        src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_12345&symbol=OANDA%3AXAUUSD&interval=15&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=dark&style=1&timezone=Asia%2FBangkok&withdateranges=1"
-        allowfullscreen>
-    </iframe>
+        <div class="tab-content" id="myTabContent">
+            <!-- Trading Journal Tab -->
+            <div class="tab-pane fade show active" id="journal" role="tabpanel" aria-labelledby="journal-tab">
+                <div class="card">
+                    <div class="card-header">บันทึกการเทรดทองคำ</div>
+                    <div class="card-body">
+                        <form id="tradeForm">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="tradeDate">วันที่/เวลา</label>
+                                    <input type="datetime-local" class="form-control" id="tradeDate" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="tradeType">ประเภท</label>
+                                    <select class="form-control" id="tradeType" required>
+                                        <option value="Buy">Buy</option>
+                                        <option value="Sell">Sell</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="entryPrice">ราคาเข้า</label>
+                                    <input type="number" step="0.01" class="form-control" id="entryPrice" required>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="exitPrice">ราคาออก</label>
+                                    <input type="number" step="0.01" class="form-control" id="exitPrice">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="lotSize">Lot Size</label>
+                                    <input type="number" step="0.01" class="form-control" id="lotSize" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="stopLoss">Stop Loss (ราคา)</label>
+                                    <input type="number" step="0.01" class="form-control" id="stopLoss">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="takeProfit">Take Profit (ราคา)</label>
+                                    <input type="number" step="0.01" class="form-control" id="takeProfit">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="tradeNotes">เหตุผล/แผนการเทรด (และอารมณ์)</label>
+                                <textarea class="form-control" id="tradeNotes" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="tradeImage">แนบรูปกราฟ (.jpg, .png)</label>
+                                <input type="file" class="form-control-file" id="tradeImage" accept="image/*">
+                                <img id="tradeImagePreview" src="#" alt="Image Preview">
+                            </div>
+                            <button type="submit" class="btn btn-primary">บันทึกการเทรด</button>
+                        </form>
+                    </div>
+                </div>
 
+                <h3 class="mt-4">รายการการเทรด</h3>
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped">
+                        <thead>
+                            <tr>
+                                <th>วันที่</th>
+                                <th>ประเภท</th>
+                                <th>เข้า</th>
+                                <th>ออก</th>
+                                <th>Lot</th>
+                                <th>SL</th>
+                                <th>TP</th>
+                                <th>กำไร/ขาดทุน ($)</th>
+                                <th>R</th>
+                                <th>รูป/บันทึก</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradeList">
+                            <!-- Trade entries will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div class="tab-pane fade" id="analytics" role="tabpanel" aria-labelledby="analytics-tab">
+                <h2>ภาพรวมผลการเทรด</h2>
+                <div class="card p-3 mb-3">
+                    <p>Total Trades: <span id="totalTrades">0</span></p>
+                    <p>Winning Trades: <span id="winningTrades">0</span></p>
+                    <p>Losing Trades: <span id="losingTrades">0</span></p>
+                    <p>Win Rate: <span id="winRate">0%</span></p>
+                    <p>Total P/L: <span id="totalPL">$0.00</span></p>
+                    <p>Average R-Multiple: <span id="avgR">0.00</span></p>
+                </div>
+                <h3>Equity Curve (กราฟผลตอบแทนสะสม)</h3>
+                <canvas id="equityChart"></canvas>
+            </div>
+
+            <!-- Calculators Tab -->
+            <div class="tab-pane fade" id="calculators" role="tabpanel" aria-labelledby="calculators-tab">
+                <div class="card mb-3">
+                    <div class="card-header">Position Size Calculator (สำหรับทองคำ)</div>
+                    <div class="card-body">
+                        <form id="positionSizeForm">
+                            <div class="form-group">
+                                <label for="accountBalance">ยอดเงินในบัญชี ($)</label>
+                                <input type="number" step="0.01" class="form-control" id="accountBalance" value="10000" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="riskPerTrade">ความเสี่ยงต่อการเทรด (%)</label>
+                                <input type="number" step="0.1" class="form-control" id="riskPerTrade" value="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="entryPriceCalc">ราคาเข้า (ทองคำ)</label>
+                                <input type="number" step="0.01" class="form-control" id="entryPriceCalc" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="stopLossPriceCalc">ราคา Stop Loss (ทองคำ)</label>
+                                <input type="number" step="0.01" class="form-control" id="stopLossPriceCalc" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">คำนวณ Lot Size</button>
+                        </form>
+                        <h4 class="mt-3">ผลลัพธ์:</h4>
+                        <p>เงินที่เสี่ยงต่อการเทรด: <span id="riskAmount">$0.00</span></p>
+                        <p>ระยะห่าง SL (Points): <span id="slDistancePoints">0</span></p>
+                        <p>Lot Size ที่เหมาะสม: <span id="calculatedLotSize">0.00</span></p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Risk/Reward Ratio Calculator</div>
+                    <div class="card-body">
+                        <form id="rrForm">
+                            <div class="form-group">
+                                <label for="entryRR">ราคาเข้า</label>
+                                <input type="number" step="0.01" class="form-control" id="entryRR" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="stopLossRR">ราคา Stop Loss</label>
+                                <input type="number" step="0.01" class="form-control" id="stopLossRR" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="takeProfitRR">ราคา Take Profit</label>
+                                <input type="number" step="0.01" class="form-control" id="takeProfitRR" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">คำนวณ R:R</button>
+                        </form>
+                        <h4 class="mt-3">ผลลัพธ์:</h4>
+                        <p>Risk: <span id="riskPointsRR">0</span> จุด</p>
+                        <p>Reward: <span id="rewardPointsRR">0</span> จุด</p>
+                        <p>Risk/Reward Ratio: <span id="rrRatio">0:0</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript libraries -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom JavaScript for our app -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tradeForm = document.getElementById('tradeForm');
+            const tradeList = document.getElementById('tradeList');
+            const tradeImageInput = document.getElementById('tradeImage');
+            const tradeImagePreview = document.getElementById('tradeImagePreview');
+
+            let trades = JSON.parse(localStorage.getItem('goldTrades')) || [];
+            let imageBase64 = null; // To store base64 image string
+
+            // Load and display trades
+            function renderTrades() {
+                tradeList.innerHTML = '';
+                let totalProfitLoss = 0;
+                let totalR = 0;
+                let winningTrades = 0;
+                let losingTrades = 0;
+
+                trades.forEach((trade, index) => {
+                    const pl = calculateProfitLoss(trade);
+                    const rMultiple = calculateRMultiple(trade, pl);
+                    totalProfitLoss += pl;
+                    if (pl > 0) winningTrades++;
+                    if (pl < 0) losingTrades++;
+                    if (rMultiple !== null && !isNaN(rMultiple)) totalR += rMultiple;
+
+                    const row = tradeList.insertRow();
+                    row.innerHTML = `
+                        <td>${new Date(trade.tradeDate).toLocaleString()}</td>
+                        <td style="color: ${trade.tradeType === 'Buy' ? '#28a745' : '#dc3545'};">${trade.tradeType}</td>
+                        <td>${trade.entryPrice}</td>
+                        <td>${trade.exitPrice !== '' ? trade.exitPrice : '-'}</td>
+                        <td>${trade.lotSize}</td>
+                        <td>${trade.stopLoss !== '' ? trade.stopLoss : '-'}</td>
+                        <td>${trade.takeProfit !== '' ? trade.takeProfit : '-'}</td>
+                        <td style="color: ${pl >= 0 ? '#28a745' : '#dc3545'};">${pl.toFixed(2)}</td>
+                        <td>${rMultiple !== null ? rMultiple.toFixed(2) : '-'}</td>
+                        <td>
+                            ${trade.tradeNotes ? `<button class="btn btn-sm btn-info view-notes" data-index="${index}">บันทึก</button>` : ''}
+                            ${trade.tradeImageBase64 ? `<button class="btn btn-sm btn-secondary view-image" data-index="${index}">รูป</button>` : ''}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-danger delete-trade" data-index="${index}">ลบ</button>
+                        </td>
+                    `;
+                });
+                updateAnalytics(totalProfitLoss, totalR, winningTrades, losingTrades);
+                renderEquityChart();
+            }
+
+            // Calculate Profit/Loss for a trade
+            function calculateProfitLoss(trade) {
+                if (trade.exitPrice === '' || trade.entryPrice === '' || trade.lotSize === '') return 0;
+                const entry = parseFloat(trade.entryPrice);
+                const exit = parseFloat(trade.exitPrice);
+                const lot = parseFloat(trade.lotSize);
+                
+                // For Gold, 1 Lot is typically 100 ounces (or 100 units).
+                // Profit/Loss per point (or per unit change) for 1 Lot is often $100.
+                // Assuming 1 point (or 1 USD change) in price for 1 standard lot (100 units) is $100.
+                // If 1 lot = 1 unit for calculation, then 1 lot * (exit - entry) * $100
+                // For simplicity, let's assume 1 unit price change for 1 lot = $100 profit/loss for now
+                // (This can be adjusted based on actual broker's contract size for XAUUSD)
+                const pipValue = 100; // For XAUUSD, 1.00 change in price is $100 per standard lot
+                
+                let pl = 0;
+                if (trade.tradeType === 'Buy') {
+                    pl = (exit - entry) * lot * pipValue;
+                } else { // Sell
+                    pl = (entry - exit) * lot * pipValue;
+                }
+                return pl;
+            }
+
+            // Calculate R-Multiple
+            function calculateRMultiple(trade, actualPL) {
+                if (trade.entryPrice === '' || trade.stopLoss === '' || trade.lotSize === '') return null;
+                const entry = parseFloat(trade.entryPrice);
+                const sl = parseFloat(trade.stopLoss);
+                const lot = parseFloat(trade.lotSize);
+                const pipValue = 100; // Same pip value assumption
+
+                let riskAmount = 0;
+                if (trade.tradeType === 'Buy') {
+                    riskAmount = (entry - sl) * lot * pipValue;
+                } else { // Sell
+                    riskAmount = (sl - entry) * lot * pipValue;
+                }
+
+                if (riskAmount <= 0) return null; // Avoid division by zero or negative risk
+                return actualPL / riskAmount;
+            }
+
+            // Update Analytics Tab
+            function updateAnalytics(totalProfitLoss, totalR, winningTrades, losingTrades) {
+                document.getElementById('totalTrades').textContent = trades.length;
+                document.getElementById('winningTrades').textContent = winningTrades;
+                document.getElementById('losingTrades').textContent = losingTrades;
+                document.getElementById('winRate').textContent = trades.length > 0 ? ((winningTrades / trades.length) * 100).toFixed(2) + '%' : '0%';
+                document.getElementById('totalPL').textContent = `$${totalProfitLoss.toFixed(2)}`;
+                document.getElementById('avgR').textContent = trades.length > 0 && totalR !== 0 ? (totalR / trades.length).toFixed(2) : '0.00';
+            }
+
+            // Render Equity Chart
+            let equityChartInstance = null;
+            function renderEquityChart() {
+                const ctx = document.getElementById('equityChart').getContext('2d');
+                const dates = trades.map(trade => new Date(trade.tradeDate).toLocaleDateString());
+                const equityData = [];
+                let currentEquity = 0;
+
+                trades.forEach(trade => {
+                    const pl = calculateProfitLoss(trade);
+                    currentEquity += pl;
+                    equityData.push(currentEquity);
+                });
+
+                if (equityChartInstance) {
+                    equityChartInstance.destroy(); // Destroy previous chart instance
+                }
+
+                equityChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Equity Curve',
+                            data: equityData,
+                            borderColor: '#ffd700', // Gold color
+                            backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                            tension: 0.1,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'category',
+                                labels: dates,
+                                ticks: {
+                                    color: '#f0f0f0'
+                                },
+                                grid: {
+                                    color: '#444'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#f0f0f0'
+                                },
+                                grid: {
+                                    color: '#444'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#f0f0f0'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Handle image upload and preview
+            tradeImageInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        tradeImagePreview.src = e.target.result;
+                        tradeImagePreview.style.display = 'block';
+                        imageBase64 = e.target.result; // Store base64 string
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    tradeImagePreview.style.display = 'none';
+                    tradeImagePreview.src = '#';
+                    imageBase64 = null;
+                }
+            });
+
+            // Add trade
+            tradeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newTrade = {
+                    tradeDate: document.getElementById('tradeDate').value,
+                    tradeType: document.getElementById('tradeType').value,
+                    entryPrice: document.getElementById('entryPrice').value,
+                    exitPrice: document.getElementById('exitPrice').value,
+                    lotSize: document.getElementById('lotSize').value,
+                    stopLoss: document.getElementById('stopLoss').value,
+                    takeProfit: document.getElementById('takeProfit').value,
+                    tradeNotes: document.getElementById('tradeNotes').value,
+                    tradeImageBase64: imageBase64 // Save base64 image
+                };
+                trades.push(newTrade);
+                localStorage.setItem('goldTrades', JSON.stringify(trades));
+                tradeForm.reset();
+                tradeImagePreview.style.display = 'none';
+                tradeImagePreview.src = '#';
+                imageBase64 = null; // Clear base64 after saving
+                renderTrades();
+            });
+
+            // Delete trade
+            tradeList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('delete-trade')) {
+                    const index = e.target.dataset.index;
+                    trades.splice(index, 1);
+                    localStorage.setItem('goldTrades', JSON.stringify(trades));
+                    renderTrades();
+                }
+                if (e.target.classList.contains('view-notes')) {
+                    const index = e.target.dataset.index;
+                    alert('บันทึกการเทรด:\n' + trades[index].tradeNotes);
+                }
+                if (e.target.classList.contains('view-image')) {
+                    const index = e.target.dataset.index;
+                    const imageUrl = trades[index].tradeImageBase64;
+                    if (imageUrl) {
+                        const imgWindow = window.open("");
+                        imgWindow.document.write(`<img src="${imageUrl}" style="max-width: 100%; height: auto;">`);
+                    } else {
+                        alert('ไม่มีรูปภาพสำหรับรายการนี้');
+                    }
+                }
+            });
+
+            // --- Calculators Logic ---
+
+            // Position Size Calculator
+            const positionSizeForm = document.getElementById('positionSizeForm');
+            positionSizeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const balance = parseFloat(document.getElementById('accountBalance').value);
+                const risk = parseFloat(document.getElementById('riskPerTrade').value) / 100; // Convert to decimal
+                const entry = parseFloat(document.getElementById('entryPriceCalc').value);
+                const sl = parseFloat(document.getElementById('stopLossPriceCalc').value);
+
+                if (isNaN(balance) || isNaN(risk) || isNaN(entry) || isNaN(sl) || sl === entry) {
+                    alert('กรุณาป้อนข้อมูลให้ถูกต้องและ SL ต้องไม่เท่ากับราคาเข้า');
+                    return;
+                }
+
+                const riskAmount = balance * risk;
+                document.getElementById('riskAmount').textContent = `$${riskAmount.toFixed(2)}`;
+
+                // For XAUUSD, 1 point change in price = $1 per 0.01 lot (micro lot) or $100 per 1 standard lot
+                // Let's assume 1 standard lot (1.00) has a value of 100 USD per 1 unit price change.
+                // So, 1 unit price change per 0.01 lot = $1
+                const valuePerPointPerLot = 100; // For a standard lot (1.00)
+
+                const slDistance = Math.abs(entry - sl);
+                document.getElementById('slDistancePoints').textContent = slDistance.toFixed(2);
+
+                if (slDistance === 0) {
+                    document.getElementById('calculatedLotSize').textContent = '0.00';
+                    return;
+                }
+                
+                // Calculate total risk for 1 standard lot
+                const riskPerStandardLot = slDistance * valuePerPointPerLot;
+
+                if (riskPerStandardLot === 0) {
+                    document.getElementById('calculatedLotSize').textContent = '0.00';
+                    return;
+                }
+
+                const calculatedLot = riskAmount / riskPerStandardLot;
+                document.getElementById('calculatedLotSize').textContent = calculatedLot.toFixed(2);
+            });
+
+            // Risk/Reward Ratio Calculator
+            const rrForm = document.getElementById('rrForm');
+            rrForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const entry = parseFloat(document.getElementById('entryRR').value);
+                const sl = parseFloat(document.getElementById('stopLossRR').value);
+                const tp = parseFloat(document.getElementById('takeProfitRR').value);
+
+                if (isNaN(entry) || isNaN(sl) || isNaN(tp)) {
+                    alert('กรุณาป้อนข้อมูลให้ถูกต้อง');
+                    return;
+                }
+
+                const riskPoints = Math.abs(entry - sl);
+                const rewardPoints = Math.abs(tp - entry);
+
+                document.getElementById('riskPointsRR').textContent = riskPoints.toFixed(2);
+                document.getElementById('rewardPointsRR').textContent = rewardPoints.toFixed(2);
+
+                if (riskPoints === 0) {
+                    document.getElementById('rrRatio').textContent = 'Undefined (Risk is 0)';
+                } else {
+                    const ratio = rewardPoints / riskPoints;
+                    document.getElementById('rrRatio').textContent = `1:${ratio.toFixed(2)}`;
+                }
+            });
+
+
+            // Initial render
+            renderTrades();
+        });
+    </script>
 </body>
 </html>
